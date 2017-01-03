@@ -123,33 +123,23 @@ void send_keys(void) {
     //int num_keys_pressed = 0;
     bool key_pressed;       //Whether or not the key at the current position is pressed
     bool old_key_pressed;   //Whether or not the key at the current position was pressed
-    //Current position in the matrix. press_trans needs this
-    //static to make sure the pointer is always valid
-    //static int pos[] = {0, 0, 0};
+
     int currLayer = g_layerStack[g_stackLength];
     for (int row = 0; row < ROWS; row++) {
         for (int col = 0; col < COLS; col++) {
             key_pressed = g_keys_pressed[row][col];
             old_key_pressed = g_old_keys_pressed[row][col];
+
+            //Update position in case of a transparent key
             g_trans_pos[0] = row;
             g_trans_pos[1] = col;
             g_trans_pos[2] = g_stackLength;
 
             if (key_pressed && !old_key_pressed) {
-                if (g_keys[currLayer][row][col].func == press_trans) {
-                    g_keys[currLayer][row][col].func(g_trans_pos, true);
-                } else {
-                    g_keys[currLayer][row][col].func(g_keys[currLayer][row][col].data, true);
-                }
-
+                g_keys[currLayer][row][col].func(g_keys[currLayer][row][col].data, true);
             } else if (!key_pressed && old_key_pressed) {
-                if (g_keys[currLayer][row][col].func == press_trans) {
-                    g_keys[currLayer][row][col].func(g_trans_pos, false);
-                } else {
-                    g_keys[currLayer][row][col].func(g_keys[currLayer][row][col].data, false);
-                }
+                g_keys[currLayer][row][col].func(g_keys[currLayer][row][col].data, false);
             }
-
         }
     }
     usb_keyboard_send();

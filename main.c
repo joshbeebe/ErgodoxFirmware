@@ -135,9 +135,6 @@ KB_MATRIX_LAYER(K("0"),
  * Determine key to be pressed then press it
  * key: key to be pressed/released
  * isPressed: Whether the key was changed to pressed or changed to release
- *
- * keyboard_keys: defined in usb_keyboard.c
- * USB_KEYBOARD_OFFSET: value of usb keycode for 'a'
  */
 void press_key(void* data, bool isPressed) {
     g_was_key_pressed = true;
@@ -218,17 +215,16 @@ void press_upper(void* data, bool isPressed) {
  * This may be called recursively if the key is transparent on multiple layers.
  * TODO: Figure out why lower layers cannot press keys from higher layers even if they are positioned
  *       that way in the layer stack.
- * pos: position array of the key to press. 
- *      pos[0]: row
- *      pos[1]: col
- *      pos[2]: current location in the layer stack
+ * v: Not used.
  * isPressed: whether or not the key should be pressed or released
+ *
+ * Globals:
+ * g_trans_pos: position array of the key to press. 
+ *      g_trans_pos[0]: row
+ *      g_trans_pos[1]: col
+ *      g_trans_pos[2]: current location in the layer stack
  */
-void press_trans(void* pos, bool isPressed) {
-    //static int stackLoc = 0;
-    /*int row = ((int*)pos)[0];*/
-    /*int col = ((int*)pos)[1];*/
-    /*int stackPos = ((int*)pos)[2];*/
+void press_trans(void* v, bool isPressed) {
     int row = g_trans_pos[0];
     int col = g_trans_pos[1];
     int stackPos = g_trans_pos[2];
@@ -240,14 +236,12 @@ void press_trans(void* pos, bool isPressed) {
     }
     //change the layer
     stackPos--;
-    //int *newPos = (int*)pos;
-    //((int*)pos)[2] = stackPos;
     g_trans_pos[2] = stackPos;
     lay = g_layerStack[stackPos];
     //transfer location if next key is also transparent
     KeyPress key = g_keys[lay][row][col];
     if (key.func == press_trans) {
-        key.func(pos, isPressed);
+        key.func(v, isPressed);
     }
     key.func(key.data, isPressed);
 }
