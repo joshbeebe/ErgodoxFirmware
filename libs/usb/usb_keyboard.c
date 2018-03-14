@@ -34,8 +34,8 @@
  **************************************************************************/
 
 // You can change these to give your code its own name.
-#define STR_MANUFACTURER	L"unspecified"  // TODO
-#define STR_PRODUCT		L"ErgoDox ergonomic keyboard"
+#define STR_MANUFACTURER	L"Josh Beebe"  // TODO
+#define STR_PRODUCT		L"Dactyl ergonomic keyboard"
 
 
 // Mac OS-X and Linux automatically load the correct drivers.  On

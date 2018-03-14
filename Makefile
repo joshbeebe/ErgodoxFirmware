@@ -46,7 +46,7 @@ TARGET = main
 
 # List C source files here. (C dependencies are automatically generated.)
 SRC =	$(TARGET).c \
-	libs/usb/usb_keyboard.c update_keys.c libs/twi/twi.c libs/mcp/mcp23018.c layer.c determine_key.c
+	libs/usb/usb_keyboard.c update_keys.c libs/twi/twi.c libs/mcp/mcp23018.c layer.c determine_key.c macro.c
 
 
 # MCU name, you MUST set this to match the board you are using

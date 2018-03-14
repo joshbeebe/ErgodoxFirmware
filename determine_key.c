@@ -2,6 +2,9 @@
 #include "determine_key.h"
 KeyCode determine_key(char* key) {
     KeyCode keyCode = 0;
+    if (strlen(key) == 1) {
+        return determine_single_key(key[0]);
+    }
     //check for F keys
     if (key[0] == 'F') { 
         //this determines which F key
@@ -16,10 +19,36 @@ KeyCode determine_key(char* key) {
             keyCode -= '1';
             keyCode = KEY_F1 + keyCode;
         }
-    }
-
-
-    if (!strcmp(key, "enter")) {
+    } else if (key[0] == 'N') {
+        if (key[1] <= '9' && key[1] >= '1') {
+            //key[1] -'1' turns ASCII to #, + KEYPAD_1 to convert to USB keycode
+            keyCode = (key[1] - '1') + KEYPAD_1;
+        } else if (key[1] == '0') {
+            //0 is at the end in USB keycodes, but at the beginning of ASCII
+            keyCode = KEYPAD_0;
+        } else {
+            switch (key[1]) {
+                case '/':
+                    keyCode = KEYPAD_SLASH;
+                    break;
+                case '*':
+                    keyCode = KEYPAD_ASTERIX;
+                    break;
+                case '-':
+                    keyCode = KEYPAD_MINUS;
+                    break;
+                case '+':
+                    keyCode = KEYPAD_PLUS;
+                    break;
+                case 'e':
+                    keyCode = KEYPAD_ENTER;
+                    break;
+                case '.':
+                    keyCode = KEYPAD_PERIOD;
+                    break;
+            }
+        }
+    } else if (!strcmp(key, "enter")) {
         keyCode = KEY_ENTER;
     } else if (!strcmp(key, "tab")) {
         keyCode = KEY_TAB;
@@ -45,6 +74,8 @@ KeyCode determine_key(char* key) {
         keyCode = KEY_PAGE_UP;
     } else if (!strcmp(key, "pgdn")) {
         keyCode = KEY_PAGE_DOWN;
+    } else if (!strcmp(key, "numl")) {
+        keyCode = KEY_NUM_LOCK;
 
 
         //Media keys need different treatment
@@ -63,13 +94,15 @@ KeyCode determine_key(char* key) {
     } else if (!strcmp(key, "calc")) {
         keyCode = APP_CALCULATOR;
     }
-    if (keyCode) return keyCode;
-    else return determine_single_key(key[0]);
+    /*if (keyCode) return keyCode;*/
+    /*else return determine_single_key(key[0]);*/
+    return keyCode;
 }
 #define USB_KEYCODE_OFFSET KEY_A
 KeyCode determine_single_key(char data) {
     //key is used both for determining the key and returning the keycode
     KeyCode key = data;
+
 
     //convert from ASCII value to USB keycode
     //Key needs to come in as lowercase

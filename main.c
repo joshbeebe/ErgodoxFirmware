@@ -11,8 +11,17 @@
 #include "libs/mcp/mcp23018.h"
 #include "determine_key.h"
 
+#include "layout.h"
+
 #define CPU_PRESCALE(n) (CLKPR = 0x80, CLKPR = (n))
 
+
+// Recordable macro variables
+/*KeyCode recordedMacro[5][255] = {{0}};*/
+/*uint8_t macroBufferLength[5] = {0};*/
+/*int activeMacroBuffer = 0;*/
+/*bool recordingMacro = false;*/
+/*bool retrieveMacroBuffer = false;*/
 
 uint8_t matrix[ROWS][COLS] = {{0}};
 
@@ -22,7 +31,17 @@ bool g_old_keys_pressed[ROWS][COLS] = {{0}};
 int g_stackLength = 0;
 int g_layerStack[MAXLAYERS] = {0};
 
+bool g_is_recording_macro = false;
+
+
+//used for determining whether key was pressed when a mod key/ tap key is released
 bool g_was_key_pressed = false;
+//used to keep track of key when a key is transparent
+/*struct {*/
+    /*int row;*/
+    /*int col;*/
+    /*int stack_pos;*/
+/*} transparant_position;*/
 int g_trans_pos[] = {0, 0, 0};
 
 /*
@@ -32,6 +51,7 @@ int teensy_init(void) {
     CPU_PRESCALE(0);
     PORTF = 0xFF;
     PORTD &= ~(1<<6); //turn off led
+    /*PORTD |= 1<<6;*/
 
     //Set each pin for input
     DDRB = 0;
@@ -50,13 +70,62 @@ int teensy_init(void) {
     return 0;
 }
 
+#define test(fn,in,out) (fn(in) != out)
+bool testing(void) {
+    _led_blink();
+    //{{{Test determineSingleKey
+    if( test(determine_single_key, 'a', KEY_A)
+    ||  test(determine_single_key, 'z', KEY_Z)
+    ||  test(determine_single_key, '0', KEY_0)
+    ||  test(determine_single_key, '9', KEY_9)
+    ||  test(determine_single_key, '=', KEY_EQUAL)
+    ||  test(determine_single_key, '[', KEY_LEFT_BRACE) ) {
+        _led_blink();
+        _led_on(1);
+        _delay_ms(2000);
+        return true;
+    }
+    //}}}
+
+    //{{{Test determine_key
+    if (test(determine_key, "F10", KEY_F10)
+    ||  test(determine_key, "F1" , KEY_F1)
+    ||  test(determine_key, "N1" , KEYPAD_1)
+    ||  test(determine_key, "N0" , KEYPAD_0)
+    ||  test(determine_key, "N/" , KEYPAD_SLASH)
+    ||  test(determine_key, "enter" , KEY_ENTER)
+    ||  test(determine_key, "play" , MEDIA_PLAY_PAUSE)
+    ||  test(determine_key, "a" , KEY_A)) {
+        _led_blink();
+        _led_on(2);
+        _delay_ms(2000);
+        return true;
+    }
+    //}}}
+
+
+    return false;
+}
+
 int main(void) {
 
     teensy_init();
     twi_init();
     mcp23018_init();
+    macro_init();
+
+
+    PORTB |= (1<<5);
+    PORTB |= (1<<6);
+    PORTB |= (1<<7);
+    if (testing()) return 1;
+    //For LEDs
+
 
     while (1) {
+        PORTB |= (1<<5);
+        PORTB |= (1<<6);
+        PORTB |= (1<<7);
         update_cols();
         //send_keys();
         _delay_ms(5);
@@ -64,72 +133,6 @@ int main(void) {
 }
 
 
-/*
- * Matrix of keys
- */
-const struct KeyPress g_keys[][ROWS][COLS] = {KB_MATRIX_LAYER(K("0"),
-        K("="), K("1"), K("2"), K("3"), K("4"), K("5"), K("`"),
-        S("tab"), K("q"), K("w"), K("e"), K("r"), K("t"), L("1"),
-        C("esc"), K("a"), K("s"), K("d"), K("f"), K("g"),
-        H("9"), K("z"), K("x"), K("c"), K("v"), K("b"), T("1"),
-        M("gl"), K("`"), K("\\"), K("2"), T("1"),
-                                                        S("home"), S("end"),
-                                                T("1"), T("2"), S("tab"),
-                                                S("bs"), M("cl"), M("al"),
-
-
-           K("5"), K("6"), K("7"), K("8"), K("9"), K("0"), K("-"),
-           K("["), K("y"), K("u"), K("i"), K("o"), K("p"), K("]"),
-                   K("h"), K("j"), K("k"), K("l"), K(";"), K("\'"),
-           T("1"), K("n"), K("m"), K(","), K("."), K("/"), H("0"),
-                           S("left"), S("down"), S("up"), S("right"), M("gr"),
-            M("ar"), L("2"),
-            K("3"), S("pgup"), S("pgdn"),
-            S("del"), S("enter"), K(" ")
-),
-//Function/symbol layer
-KB_MATRIX_LAYER(K("0"),
-        K("="), K("F1"), K("F2"), K("F3"), K("F4"), K("F5"), K("F11"),
-        TRANS, TRANS, TRANS, TRANS, TRANS, TRANS, P("1"),
-        TRANS, TRANS, TRANS, TRANS, TRANS, TRANS,
-        TRANS, TRANS, TRANS, TRANS, Z("/remaining`e"), Z("/hideout`e"), T("1"),
-        TRANS, TRANS, TRANS, TRANS, T("1"),
-                                                       TRANS, TRANS,
-                                                TRANS, TRANS, TRANS,
-                                                TRANS, TRANS, S("calc"),
-
-
-       K("F12"), K("F6"), K("F7"),   K("F8"),   K("F9"),   K("F10"), K("1"),
-       TRANS,    TRANS,   TRANS,     TRANS,     TRANS,     TRANS,    TRANS,
-                 TRANS,   U("["),    U("]"),    TRANS,     K("="),    S("vup"),
-       TRANS,    TRANS,   U("9"),    U("0"),    TRANS,     TRANS,    S("vdn"),
-                          S("play"), S("next"), S("prev"), TRANS,    S("mute"),
-        TRANS, TRANS,
-        TRANS, TRANS, TRANS,
-        TRANS, TRANS, TRANS
-),
-//Gaming layer
-KB_MATRIX_LAYER(K("0"),
-        K("`"), TRANS, TRANS, TRANS, TRANS, TRANS, TRANS,
-        TRANS, TRANS, TRANS, TRANS, TRANS, TRANS, TRANS,
-        TRANS, TRANS, TRANS, TRANS, TRANS, TRANS,
-        M("sl"), TRANS, TRANS, TRANS, TRANS, TRANS, TRANS,
-        M("cl"), TRANS, TRANS, M("al"), K(" "),
-                                                        TRANS, TRANS,
-                                                TRANS, TRANS, TRANS,
-                                                TRANS, TRANS, TRANS,
-
-
-               TRANS, TRANS, TRANS, TRANS, TRANS, TRANS, TRANS,
-               TRANS, TRANS, TRANS, TRANS, TRANS, TRANS, TRANS,
-                      TRANS, TRANS, TRANS, TRANS, TRANS, TRANS,
-               TRANS, TRANS, TRANS, TRANS, TRANS, TRANS, M("sr"),
-                             TRANS, TRANS, TRANS, TRANS, TRANS,
-                TRANS, P("2"),
-                TRANS, TRANS, TRANS,
-                TRANS, TRANS, TRANS
-)
-};
 
 /*
  * Determine key to be pressed then press it
@@ -139,7 +142,7 @@ KB_MATRIX_LAYER(K("0"),
 void press_key(void* data, bool isPressed) {
     g_was_key_pressed = true;
     KeyCode key = determine_key((char*)data);
-    press(key, isPressed);
+    _press(key, isPressed);
 
 }
 /*
@@ -154,9 +157,16 @@ void press_special(void* data, bool isPressed) {
     if (keyCode > KEYPAD_PERIOD) {
         press_media(keyCode, isPressed);
     } else {
-        press(keyCode, isPressed);
+        _press(keyCode, isPressed);
     }
 
+}
+
+void press_num_lock(void* data, bool isPressed) {
+    if (!isPressed) {
+        usb_keyboard_press(KEY_NUM_LOCK, 0);
+        push_layer(data, isPressed);
+    }
 }
 /*
  *  Press a modifier key
@@ -231,18 +241,13 @@ void press_trans(void* v, bool isPressed) {
     int lay = g_layerStack[stackPos];
     //Do nothing if called from the main layer
     if (g_stackLength <= 0) {
-        usb_keyboard_press(KEY_X, 0);
         return;
     }
-    //change the layer
-    stackPos--;
-    g_trans_pos[2] = stackPos;
-    lay = g_layerStack[stackPos];
-    //transfer location if next key is also transparent
+    //update current layer and the global transparent position array
+    g_trans_pos[2]--;
+    lay = g_layerStack[g_trans_pos[2]];   
+
     KeyPress key = g_keys[lay][row][col];
-    if (key.func == press_trans) {
-        key.func(v, isPressed);
-    }
     key.func(key.data, isPressed);
 }
 
@@ -262,6 +267,7 @@ void press_media(KeyCode mediakey, bool isPressed) {
 /*
  * Send a series of keys specified by data
  * data: string of characters to send
+ *       ` is used as an escape character for special keys
  * isPressed: 
  */
 void press_macro(void* data, bool isPressed) {
@@ -273,21 +279,62 @@ void press_macro(void* data, bool isPressed) {
     KeyCode keyCode = 0;
     char key;
     uint8_t mods = 0;
+    uint8_t time;
     for (int i = 0; i < len; i++) {
         if (macro[i] == '`') {
             i++;
             key = macro[i];
             switch (key) {
+                case 'a':
+                    mods |= KEY_LEFT_ALT;
+                    continue;
+                    //This will keep control pressed for the next key press
+                case 'b':
+                    keyCode = KEY_BACKSPACE;
+                    break;
+                case 't':
+                    keyCode = KEY_TAB;
+                    break;
+                case 'c':
+                    mods |= KEY_LEFT_CTRL;
+                    //This will keep control pressed for the next key press
+                    continue;
                 case 'e':
                     keyCode = KEY_ENTER;
                     break;
+                case 'w':
+                    //wait for x ms
+                    time = 0;
+                    i++;
+                    key = macro[i];
+                    while (key >= '0' && key <= '9') {
+                        time *= 10;
+                        time += key - '0';
+                        i++;
+                        key = macro[i];
+                    }
+                    _delay_ms(time);
+                    //make sure we interpret the next command
+                    i--;
+                    continue;
             }
         } else {
-            keyCode = determine_single_key(macro[i]);
+            key = macro[i];
+
+            //Handle uppercase keys
+            if (key >= 'A' && key <= 'Z') {
+                key -= 'A';
+                key += 'a';
+                mods |=  KEY_LEFT_SHIFT;  
+            }
+
+            keyCode = determine_single_key(key);
         }
         usb_keyboard_press(keyCode, mods);
+        //make sure we wait long enough for things to register key presses
+        _delay_ms(35);
+        mods = 0;
     }
-    len = 0;
 }
 
 /*
@@ -336,32 +383,62 @@ void press_shift_key(void* key, bool isPressed) {
     }
 }
 
+void record_macro(void* x, bool isPressed) {
+    if (!isPressed) {
+        g_is_recording_macro = !g_is_recording_macro;
+        if (g_is_recording_macro) {
+            macro_clear();
+        }
+    }
+}
+
+void play_macro(void* x, bool isPressed) {
+    if (!isPressed) {
+        g_is_recording_macro = false;
+        macro_playback();
+    }
+}
+
+void reflash_firmware(void* x, bool isPressed) {
+    if (!isPressed) {
+		// --- for all Teensy boards ---
+
+		cli();
+
+		// disable watchdog, if enabled
+		// disable all peripherals
+		UDCON = 1;
+		USBCON = (1<<FRZCLK);  // disable USB
+		UCSR1B = 0;
+		_delay_ms(5);
+
+		// --- Teensy 2.0 specific ---
+
+		EIMSK = 0; PCICR = 0; SPCR = 0; ACSR = 0; EECR = 0; ADCSRA = 0;
+		TIMSK0 = 0; TIMSK1 = 0; TIMSK3 = 0; TIMSK4 = 0; UCSR1B = 0; TWCR = 0;
+		DDRB = 0; DDRC = 0; DDRD = 0; DDRE = 0; DDRF = 0; TWCR = 0;
+		PORTB = 0; PORTC = 0; PORTD = 0; PORTE = 0; PORTF = 0;
+		asm volatile("jmp 0x7E00");
+    }
+}
+
 /*
  * Press or release a key
  * key: USB keycode of the key to be pressed/released
  * isPressed: whether the key is to be pressed or released
  */
-void press(KeyCode key, bool isPressed) {
+void _press(KeyCode key, bool isPressed) {
     for (int i = 0; i < 6; i++) {
         //Put key in array
         //If full, the key is just ignored
         if (isPressed) {
-            /*if (num_toggledLayers) {*/
-                /*num_toggledKeys++;*/
-                /*toggledPressedKeys[num_toggledKeys] = key;*/
-            /*}*/
             if (keyboard_keys[i] == 0) {
                 keyboard_keys[i] = key;
                 return;
             }
+
         //Remove key from array
         } else {
-            /*for (int j = 0; j < 6; j++) {*/
-                /*if (key == toggledPressedKeys[j]) {*/
-                    /*toggledPressedKeys[j] = 0;*/
-                    /*num_toggledKeys--;*/
-                /*}*/
-            /*}*/
             if (keyboard_keys[i] == key) {
                 keyboard_keys[i] = 0;
                 return;

@@ -3,6 +3,7 @@
 #include "main.h"
 #include "libs/mcp/mcp23018.h"
 #include "libs/usb/usb_keyboard.h"
+#include "macro.h"
 
 //Give time for pixies to stop moving
 #define debounce() _delay_us(1)
@@ -24,13 +25,13 @@ void update_cols(void) {
 
 #define _UP_COL(port, pin, col)  \
     {                           \
-    DDR##port = (1 << pin);     \
+    DDR##port |= (1 << pin);     \
     debounce();                 \
     update_col(col);            \
-    DDR##port = 0;              \
+    DDR##port &= ~(1 << pin);              \
     }
-
 #define UP_COL(x) _UP_COL(x)
+
 #define COL_D C, 6, 0x0d
 #define COL_C D, 3, 0x0c
 #define COL_B D, 2, 0x0b
@@ -135,12 +136,16 @@ void send_keys(void) {
             g_trans_pos[1] = col;
             g_trans_pos[2] = g_stackLength;
 
+            KeyPress kp = g_keys[currLayer][row][col];
             if (key_pressed && !old_key_pressed) {
-                g_keys[currLayer][row][col].func(g_keys[currLayer][row][col].data, true);
+                kp.func(kp.data, true);
             } else if (!key_pressed && old_key_pressed) {
-                g_keys[currLayer][row][col].func(g_keys[currLayer][row][col].data, false);
+                kp.func(kp.data, false);
             }
         }
+    }
+    if (g_is_recording_macro) {
+        macro_append();
     }
     usb_keyboard_send();
 }
