@@ -1,6 +1,5 @@
 #ifndef UPDATE_KEYS_H
 #define UPDATE_KEYS_H
-#include <stdbool.h>
 
 //These are defined by physical pins on the Teensy
 #define ROW5 0

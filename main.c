@@ -1,20 +1,14 @@
-#include <avr/pgmspace.h>
-#include <avr/interrupt.h>
-#include <util/delay.h>
+/*#include <avr/pgmspace.h>*/
+/*#include <avr/interrupt.h>*/
 #include <stdbool.h>
 #include <string.h>
-#include "libs/usb/usb_keyboard.h"
 #include "main.h"
 #include "update_keys.h"
 #include "defines.h"
-#include "libs/twi/twi.h"
-#include "libs/mcp/mcp23018.h"
 #include "determine_key.h"
+#include "hardware/teensy.h"
 
 #include "layout.h"
-
-#define CPU_PRESCALE(n) (CLKPR = 0x80, CLKPR = (n))
-
 
 // Recordable macro variables
 /*KeyCode recordedMacro[5][255] = {{0}};*/
@@ -44,31 +38,6 @@ bool g_was_key_pressed = false;
 /*} transparant_position;*/
 int g_trans_pos[] = {0, 0, 0};
 
-/*
- *  Initialize teensy things
- */
-int teensy_init(void) {
-    CPU_PRESCALE(0);
-    PORTF = 0xFF;
-    PORTD &= ~(1<<6); //turn off led
-    /*PORTD |= 1<<6;*/
-
-    //Set each pin for input
-    DDRB = 0;
-    DDRC = 0;
-    //DDRD = 0;
-    DDRE = 0;
-    DDRF = 0;
-
-    //Set outputs to low
-    PORTC = 0;
-    PORTB = 0;
-
-    usb_init();
-    while (!usb_configured());
-    _delay_ms(500);
-    return 0;
-}
 
 #define test(fn,in,out) (fn(in) != out)
 bool testing(void) {
@@ -82,7 +51,7 @@ bool testing(void) {
     ||  test(determine_single_key, '[', KEY_LEFT_BRACE) ) {
         _led_blink();
         _led_on(1);
-        _delay_ms(2000);
+        hardware_delay_ms(2000);
         return true;
     }
     //}}}
@@ -98,7 +67,7 @@ bool testing(void) {
     ||  test(determine_key, "a" , KEY_A)) {
         _led_blink();
         _led_on(2);
-        _delay_ms(2000);
+        hardware_delay_ms(2000);
         return true;
     }
     //}}}
@@ -109,26 +78,14 @@ bool testing(void) {
 
 int main(void) {
 
-    teensy_init();
-    twi_init();
-    mcp23018_init();
-    macro_init();
+    hardware_init();
 
-
-    PORTB |= (1<<5);
-    PORTB |= (1<<6);
-    PORTB |= (1<<7);
     if (testing()) return 1;
-    //For LEDs
-
 
     while (1) {
-        PORTB |= (1<<5);
-        PORTB |= (1<<6);
-        PORTB |= (1<<7);
+        hardware_loop();
+        hardware_delay_ms(5);
         update_cols();
-        //send_keys();
-        _delay_ms(5);
     }
 }
 
@@ -142,29 +99,13 @@ int main(void) {
 void press_key(void* data, bool isPressed) {
     g_was_key_pressed = true;
     KeyCode key = determine_key((char*)data);
-    _press(key, isPressed);
-
-}
-/*
- *  Press a non-printing key
- *  data: string with the name of the key to be pressed
- *  isPressed: whether the key is being pressed or released
- */
-void press_special(void* data, bool isPressed) {
-    g_was_key_pressed = true;
-    KeyCode keyCode = determine_key((char*)data);
-    //KEYPAD_PERIOD is the highest USB keycode
-    if (keyCode > KEYPAD_PERIOD) {
-        press_media(keyCode, isPressed);
-    } else {
-        _press(keyCode, isPressed);
-    }
+    hardware_press(key, isPressed);
 
 }
 
 void press_num_lock(void* data, bool isPressed) {
     if (!isPressed) {
-        usb_keyboard_press(KEY_NUM_LOCK, 0);
+        hardware_momentary_press(KEY_NUM_LOCK, 0);
         push_layer(data, isPressed);
     }
 }
@@ -189,7 +130,7 @@ void press_mod(void* data, bool isPressed) {
         if (isPressed) {
             if (key[1] == 'l') leftShiftPressed = true;
             if (key[1] == 'r' && leftShiftPressed) {
-                usb_keyboard_press(KEY_CAPS_LOCK, 0);
+                hardware_momentary_press(KEY_CAPS_LOCK, 0);
             }
         } else {
             if (key[1] == 'l') leftShiftPressed = false;
@@ -201,11 +142,7 @@ void press_mod(void* data, bool isPressed) {
     }
 
     //press the modifier
-    if (isPressed) {
-        keyboard_modifier_keys |= mod;
-    } else {
-        keyboard_modifier_keys &= ~(mod);
-    }
+    hardware_press_modifier(mod, isPressed);
 }
 
 /*
@@ -214,8 +151,7 @@ void press_mod(void* data, bool isPressed) {
  * isPressed: whether the key is pressed or released
  */
 void press_upper(void* data, bool isPressed) {
-    if (isPressed) keyboard_modifier_keys |= KEY_LEFT_SHIFT;
-    else keyboard_modifier_keys &= ~(KEY_LEFT_SHIFT);
+    hardware_press_modifier(KEY_LEFT_SHIFT, isPressed);
     press_key(data, isPressed);
 }
 
@@ -251,19 +187,6 @@ void press_trans(void* v, bool isPressed) {
     key.func(key.data, isPressed);
 }
 
-/*
- * Press a media/application key
- * mediakey: key to be pressed
- * isPressed: whether to press or release the key
- */
-void press_media(KeyCode mediakey, bool isPressed) {
-    if (isPressed) {
-        consumer_key = mediakey;
-    } else {
-        consumer_key = 0;
-    }
-    usb_extra_consumer_send();
-}
 /*
  * Send a series of keys specified by data
  * data: string of characters to send
@@ -313,7 +236,7 @@ void press_macro(void* data, bool isPressed) {
                         i++;
                         key = macro[i];
                     }
-                    _delay_ms(time);
+                    hardware_delay_ms(time);
                     //make sure we interpret the next command
                     i--;
                     continue;
@@ -330,9 +253,9 @@ void press_macro(void* data, bool isPressed) {
 
             keyCode = determine_single_key(key);
         }
-        usb_keyboard_press(keyCode, mods);
+        hardware_momentary_press(keyCode, mods);
         //make sure we wait long enough for things to register key presses
-        _delay_ms(35);
+        hardware_delay_ms(35);
         mods = 0;
     }
 }
@@ -350,7 +273,7 @@ void press_ctrl_key(void* key, bool isPressed) {
     } else {
         press_mod("cl", isPressed);
         if (!g_was_key_pressed) {
-            usb_keyboard_press(KEY_ESC, 0);
+            hardware_momentary_press(KEY_ESC, 0);
         }
     }
 }
@@ -370,14 +293,14 @@ void press_shift_key(void* key, bool isPressed) {
         }
         else {
             g_was_key_pressed = true;
-            usb_keyboard_press(KEY_CAPS_LOCK, 0);
+            hardware_momentary_press(KEY_CAPS_LOCK, 0);
         }
         press_mod("sl", isPressed);
         
     } else {
         press_mod("sl", isPressed);
         if (!g_was_key_pressed) {
-            usb_keyboard_press(determine_key((char*)key), KEY_LEFT_SHIFT);
+            hardware_momentary_press(determine_key((char*)key), KEY_LEFT_SHIFT);
         }
         isShiftPressed = false;
     }
@@ -401,62 +324,22 @@ void play_macro(void* x, bool isPressed) {
 
 void reflash_firmware(void* x, bool isPressed) {
     if (!isPressed) {
-		// --- for all Teensy boards ---
-
-		cli();
-
-		// disable watchdog, if enabled
-		// disable all peripherals
-		UDCON = 1;
-		USBCON = (1<<FRZCLK);  // disable USB
-		UCSR1B = 0;
-		_delay_ms(5);
-
-		// --- Teensy 2.0 specific ---
-
-		EIMSK = 0; PCICR = 0; SPCR = 0; ACSR = 0; EECR = 0; ADCSRA = 0;
-		TIMSK0 = 0; TIMSK1 = 0; TIMSK3 = 0; TIMSK4 = 0; UCSR1B = 0; TWCR = 0;
-		DDRB = 0; DDRC = 0; DDRD = 0; DDRE = 0; DDRF = 0; TWCR = 0;
-		PORTB = 0; PORTC = 0; PORTD = 0; PORTE = 0; PORTF = 0;
-		asm volatile("jmp 0x7E00");
+        hardware_reflash_firmware();
     }
 }
 
-/*
- * Press or release a key
- * key: USB keycode of the key to be pressed/released
- * isPressed: whether the key is to be pressed or released
- */
-void _press(KeyCode key, bool isPressed) {
-    for (int i = 0; i < 6; i++) {
-        //Put key in array
-        //If full, the key is just ignored
-        if (isPressed) {
-            if (keyboard_keys[i] == 0) {
-                keyboard_keys[i] = key;
-                return;
-            }
 
-        //Remove key from array
-        } else {
-            if (keyboard_keys[i] == key) {
-                keyboard_keys[i] = 0;
-                return;
-            }
-        }
-    }
-}
-void release_toggled_keys(void) {
-    for (int i = 0; i < 6; i++) {
-        for (int j = 0; j < 6; j++) {
-            if (keyboard_keys[i] == toggledPressedKeys[j]) {
-                keyboard_keys[i] = 0;
-                toggledPressedKeys[j] = 0;
-                num_toggledKeys--;
-            }
-        }
-    }
-    keyboard_modifier_keys = 0;
-    usb_keyboard_send();
-}
+/*void release_toggled_keys(void) {*/
+    /*for (int i = 0; i < 6; i++) {*/
+        /*for (int j = 0; j < 6; j++) {*/
+            /*if (keyboard_keys[i] == toggledPressedKeys[j]) {*/
+                /*keyboard_keys[i] = 0;*/
+                /*toggledPressedKeys[j] = 0;*/
+                /*num_toggledKeys--;*/
+            /*}*/
+        /*}*/
+    /*}*/
+    /*keyboard_modifier_keys = 0;*/
+    /*usb_keyboard_send();*/
+/*}*/
 

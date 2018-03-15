@@ -4,7 +4,11 @@
 #include "libs/mcp/mcp23018.h"
 #include "libs/usb/usb_keyboard.h"
 #include "macro.h"
+#include <avr/pgmspace.h>
+/*#include <avr/interrupt.h>*/
+#include <util/delay.h>
 
+#include <stdbool.h>
 //Give time for pixies to stop moving
 #define debounce() _delay_us(1)
 

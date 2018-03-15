@@ -1,41 +1,11 @@
 #ifndef MAIN_H
 #define MAIN_H
 
-#include <avr/pgmspace.h>
-#include <util/delay.h>
 #include <stdbool.h>
 #include "defines.h"
 #include "layer.h"
 #include "macro.h"
 
-//LED functions
-#define _led_on(n) DDRB |= (1<<(n+4))
-#define _led_off(n) DDRB &= ~(1<<(n+4))
-#define _led_all_off() do {         \
-                        _led_off(1);\
-                        _led_off(2);\
-                        _led_off(3);\
-                       } while (0);
-
-#define _led_all_on() do {         \
-                        _led_on(1);\
-                        _led_on(2);\
-                        _led_on(3);\
-                       } while (0);
-
-#define _led_blink() do {            \
-                        _led_all_on();\
-                        _delay_ms(500);\
-                        _led_all_off();\
-                     } while (0);
-// Internal LED
-#define __led_off PORTD &= ~(1<<6); _delay_ms(250);//turn off led
-#define __led_on PORTD |= 1<<6; _delay_ms(250);
-#define __led_hold(n) __led_on; _delay_ms(n); __led_off;
-#define __led_blink(n) for (int MACTMP = 0; MACTMP < n; MACTMP++) { \
-                        __led_on;\
-                        __led_off;\
-                    }
 
 
 //Each key is represented in the matrix as a function to execute 
@@ -73,8 +43,6 @@ extern bool g_is_recording_macro;
 void press_key(void* data, bool);
 #define M(x) {x, press_mod}
 void press_mod(void* data, bool);
-#define S(x) {x, press_special}
-void press_special(void*, bool);
 #define TRANS {0, press_trans}
 void press_trans(void*, bool);
 #define LL(x) {x, push_layer}
@@ -100,8 +68,6 @@ void record_macro(void*, bool);
 void play_macro(void*, bool);
 
 
-void _press(KeyCode, bool);
-void press_media(KeyCode, bool);
 
 
 
