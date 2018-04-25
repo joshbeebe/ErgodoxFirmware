@@ -84,7 +84,8 @@ KeyCode determine_key(char* key) {
     } else if (!strcmp(key, "vdn")) {
         keyCode = MEDIA_VOL_DOWN;
     } else if (!strcmp(key, "mute")) {
-        keyCode = MEDIA_MUTE;
+        /*keyCode = MEDIA_MUTE;*/
+        keyCode = AUDIO_MUTE;
     } else if (!strcmp(key, "next")) {
         keyCode = MEDIA_NEXT_TRACK;
     } else if (!strcmp(key, "prev")) {

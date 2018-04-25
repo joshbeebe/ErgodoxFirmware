@@ -3,7 +3,7 @@
  * Matrix of keys
  * TODO: Make an auto-formatter for this file
  */
-const struct KeyPress g_keys[][ROWS][COLS] = {DACTYL_MATRIX_LAYER(K("0"),
+const struct PROGMEM KeyPress g_keys[][ROWS][COLS] = {DACTYL_MATRIX_LAYER(K("0"),
         K("=")   , K("1") , K("2")  , K("3") , K("4") , K("5") ,
         K("tab") , K("q") , K("w")  , K("e") , K("r") , K("t") ,
         C("esc") , K("a") , K("s")  , K("d") , K("f") , K("g") ,
@@ -18,7 +18,7 @@ const struct KeyPress g_keys[][ROWS][COLS] = {DACTYL_MATRIX_LAYER(K("0"),
                    K("y"), K("u"), K("i"), K("o"), K("p"), K("="),
                    K("h"), K("j"), K("k"), K("l"), K(";"), K("\'"),
                    K("n"), K("m"), K(","), K("."), K("/"), H("0"),
-                           K("["), K("]"), K("up"), K("right"), M("gr"),
+                           HL("1"), K("["), K("]"), K("right"), M("gr"),
             HL("1"), K("bs"),
             M("cr"),                      
             K("del"), K("enter"), K(" ")
@@ -26,7 +26,7 @@ const struct KeyPress g_keys[][ROWS][COLS] = {DACTYL_MATRIX_LAYER(K("0"),
 //Function/symbol layer
 DACTYL_MATRIX_LAYER(K("0"),
         K("F11"), K("F1"), K("F2"), K("F3"), K("F4"), K("F5"),          
-        TRANS, RM(""), TRANS, K("end"), TRANS, TRANS,        
+        TRANS, RM(""), TRANS, K("end"), TRANS, PM(""),        
         TRANS, K("home"), TRANS, TRANS, TRANS, TRANS,
         TRANS, TRANS, TRANS, TRANS, TRANS, TRANS,        
         RF(""), TRANS, TRANS, TRANS, HL("1"),
@@ -36,10 +36,10 @@ DACTYL_MATRIX_LAYER(K("0"),
 
 
                  K("F6"), K("F7"),   K("F8"),   K("F9"),   K("F10"), K("F12"),
-                 TRANS,   TRANS,     TRANS, TRANS,     TRANS,    TRANS,
-                 K("left"), K("down"), K("up"), K("right"),  TRANS, K("vup"),
-                 TRANS,   U("9"),    U("0"),    TRANS,     TRANS,    K("vdn"),
-                          K("play"), K("next"), K("prev"), TRANS,    K("mute"),
+                 TRANS,   TRANS,     TRANS,     TRANS,     TRANS,    TRANS,
+                 K("left"),K("down"),K("up"),   K("right"),TRANS,    K("vup"),
+                 TRANS,   TRANS,     U("9"),    U("0"),    TRANS,    K("vdn"),
+                          HL("1"),   K("play"), K("next"), K("prev"),K("mute"),
         TRANS, TRANS,
         TRANS,              
         TRANS, PL("2"), TL("2")

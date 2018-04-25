@@ -2,21 +2,17 @@
 #define MACRO_H
 #include <stdbool.h>
 #include "main.h"
-#include "libs/usb/usb_keyboard.h"
+#define MAX_MACRO_LEN 14
 
-#define MACRO_LEN 25
-typedef struct {
-    uint8_t keys[6];
-    uint8_t modifiers;
-} MacroKey;
-
-MacroKey macroKeys[MACRO_LEN];
-//int16_t macroKeysLen;
-
-void macro_init(void);
-void macro_playback(void);
-void macro_append(void);
+void macro_append(KeyCode, bool, bool);
+void macro_play(void);
 void macro_clear(void);
 
+typedef struct {
+    KeyCode key;
+    bool isPressed;
+    bool isModifier;
+} MacroKey;
+MacroKey macroArray[MAX_MACRO_LEN];
 #endif /* end of include guard: MACRO_H */
 

@@ -2,20 +2,15 @@
 /*#include <avr/interrupt.h>*/
 #include <stdbool.h>
 #include <string.h>
+#include <stdio.h>
 #include "main.h"
 #include "update_keys.h"
 #include "defines.h"
 #include "determine_key.h"
+#include "macro.h"
 #include "hardware/teensy.h"
 
 #include "layout.h"
-
-// Recordable macro variables
-/*KeyCode recordedMacro[5][255] = {{0}};*/
-/*uint8_t macroBufferLength[5] = {0};*/
-/*int activeMacroBuffer = 0;*/
-/*bool recordingMacro = false;*/
-/*bool retrieveMacroBuffer = false;*/
 
 uint8_t matrix[ROWS][COLS] = {{0}};
 
@@ -25,7 +20,7 @@ bool g_old_keys_pressed[ROWS][COLS] = {{0}};
 int g_stackLength = 0;
 int g_layerStack[MAXLAYERS] = {0};
 
-bool g_is_recording_macro = false;
+bool isRecording = false;
 
 
 //used for determining whether key was pressed when a mod key/ tap key is released
@@ -81,7 +76,6 @@ int main(void) {
     hardware_init();
 
     if (testing()) return 1;
-
     while (1) {
         hardware_loop();
         hardware_delay_ms(5);
@@ -99,8 +93,10 @@ int main(void) {
 void press_key(void* data, bool isPressed) {
     g_was_key_pressed = true;
     KeyCode key = determine_key((char*)data);
+    if (isRecording) {
+        macro_append(key, isPressed, false);
+    }
     hardware_press(key, isPressed);
-
 }
 
 void press_num_lock(void* data, bool isPressed) {
@@ -142,6 +138,9 @@ void press_mod(void* data, bool isPressed) {
     }
 
     //press the modifier
+    if (isRecording) {
+        macro_append(mod, isPressed, true);
+    }
     hardware_press_modifier(mod, isPressed);
 }
 
@@ -151,7 +150,8 @@ void press_mod(void* data, bool isPressed) {
  * isPressed: whether the key is pressed or released
  */
 void press_upper(void* data, bool isPressed) {
-    hardware_press_modifier(KEY_LEFT_SHIFT, isPressed);
+    /*hardware_press_modifier(KEY_LEFT_SHIFT, isPressed);*/
+    press_mod("sl", isPressed);
     press_key(data, isPressed);
 }
 
@@ -306,40 +306,26 @@ void press_shift_key(void* key, bool isPressed) {
     }
 }
 
-void record_macro(void* x, bool isPressed) {
-    if (!isPressed) {
-        g_is_recording_macro = !g_is_recording_macro;
-        if (g_is_recording_macro) {
-            macro_clear();
-        }
-    }
-}
-
-void play_macro(void* x, bool isPressed) {
-    if (!isPressed) {
-        g_is_recording_macro = false;
-        macro_playback();
-    }
-}
-
 void reflash_firmware(void* x, bool isPressed) {
     if (!isPressed) {
         hardware_reflash_firmware();
     }
 }
 
+void press_macro_record(void* key, bool isPressed) {
+    if (!isPressed) {
+        if (isRecording) {
+            isRecording = false;
+        } else {
+            macro_clear();
+            isRecording = true;
+        }
+    }
+}
 
-/*void release_toggled_keys(void) {*/
-    /*for (int i = 0; i < 6; i++) {*/
-        /*for (int j = 0; j < 6; j++) {*/
-            /*if (keyboard_keys[i] == toggledPressedKeys[j]) {*/
-                /*keyboard_keys[i] = 0;*/
-                /*toggledPressedKeys[j] = 0;*/
-                /*num_toggledKeys--;*/
-            /*}*/
-        /*}*/
-    /*}*/
-    /*keyboard_modifier_keys = 0;*/
-    /*usb_keyboard_send();*/
-/*}*/
-
+void press_macro_play(void* key, bool isPressed) {
+    if (!isPressed) {
+        isRecording = false;
+        macro_play();
+    }
+}

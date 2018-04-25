@@ -2,9 +2,9 @@
 
 #define LAYER_H
 
-#include "main.h"
 #include <stdbool.h>
 #include <stdint.h>
+#include "main.h"
 void push_layer(void*, bool);
 void pop_layer(void*, bool);
 void toggle_layer(void*, bool);

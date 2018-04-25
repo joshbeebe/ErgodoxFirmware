@@ -4,7 +4,6 @@
 #include <stdbool.h>
 #include "defines.h"
 #include "layer.h"
-#include "macro.h"
 
 
 
@@ -36,8 +35,6 @@ extern const struct KeyPress g_keys[][ROWS][COLS];
 
 extern bool g_was_key_pressed;
 
-extern bool g_is_recording_macro;
-
 //For normal keys
 #define K(x) {x, press_key}
 void press_key(void* data, bool);
@@ -62,15 +59,10 @@ void press_num_lock(void*, bool);
 #define RF(x) {x, reflash_firmware}
 void reflash_firmware(void*, bool);
 
-#define RM(x) {x, record_macro}
-void record_macro(void*, bool);
-#define PM(x) {x, play_macro}
-void play_macro(void*, bool);
-
-
-
-
-
+#define RM(x) {x, press_macro_record}
+void press_macro_record(void*, bool);
+#define PM(x) {x, press_macro_play}
+void press_macro_play(void*, bool);
 
 //From official firmware
 //src/keyboard/ergodox/matrix.h

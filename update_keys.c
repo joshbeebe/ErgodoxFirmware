@@ -148,9 +148,6 @@ void send_keys(void) {
             }
         }
     }
-    if (g_is_recording_macro) {
-        macro_append();
-    }
     usb_keyboard_send();
 }
 

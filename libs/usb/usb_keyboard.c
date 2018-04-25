@@ -325,7 +325,7 @@ static uint8_t keyboard_idle_count=0;
 volatile uint8_t keyboard_leds=0;
 
 // which consumer key is currently pressed
-uint16_t consumer_key;
+uint16_t consumer_key = 0;
 uint16_t last_consumer_key;
 
 
@@ -695,12 +695,12 @@ int8_t usb_extra_consumer_send()
 {
 	int result = 0;
 	// don't resend the same key repeatedly if held, only send it once.
-	if (consumer_key != last_consumer_key) {
+    if (consumer_key != last_consumer_key) {
 		result = usb_extra_send(REPORT_ID_CONSUMER, consumer_key);
 		if (result == 0) {
 			last_consumer_key = consumer_key;
 		}
-	}
+    }
 	return result;
 }
 
