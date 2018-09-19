@@ -9,28 +9,80 @@
 #define NUM "3"
 #define MAC "4"
 const struct PROGMEM KeyPress g_keys[][ROWS][COLS] = {
-DACTYL_MATRIX_LAYER(K("0"),
-        K("=")   , K("1") , K("2")  , K("3") , K("4") , K("5") ,
-        K("tab") , K("q") , K("w")  , K("e") , K("r") , K("t") ,
-        C("esc") , K("a") , K("s")  , K("d") , K("f") , K("g") ,
-        H("9")   , H("z") , K("x")  , K("c") , K("v") , K("b") ,
-        M("gl")  , K("`") , K("\\") , K("2") , HL("1") ,
-                                                        HL(FUN), HL("2"),
-                                                                HL("1"),
-                                                K("bs"),M("cl"),M("al"),
+DACTYL_MANU_MATRIX_LAYER(K("0"),
+        K("q") , K("w")  , K("e") , K("r") , K("t") ,
+        K("a") , K("s")  , K("d") , K("f") , K("g") ,
+        H("z") , K("x")  , K("c") , K("v") , K("b") ,
+                 K("\\") , K("`") ,          
+                                                        HL("2"), K("esc"), 
+                                                        HL("1"), M("al"), 
+                                                K("bs"),M("cl"),
 
 
-                  K("6"), K("7"), K("8"), K("9"), K("0"), K("-"),
-                   K("y"), K("u"), K("i"), K("o"), K("p"), K("="),
-                   K("h"), K("j"), K("k"), K("l"), K(";"), K("\'"),
-                   K("n"), K("m"), K(","), K("."), K("/"), H("0"),
-                           HL("1"), K("["), K("]"), K("right"), M("gr"),
-            HL(FUN), K("bs"),
-            M("cr"),
-            K("del"), K("enter"), K(" ")
+                   K("y"), K("u"), K("i"), K("o"), K("p"),
+                   K("h"), K("j"), K("k"), K("l"), K("'"),
+                   K("n"), K("m"), K(","), K("."), H("/"),
+                                    K("["), K("]"),
+            HL("2"), K("bs"),
+            HL("1"), M("cr"),
+                      K("enter"), K(" ")
+),
+DACTYL_MANU_MATRIX_LAYER(K("0"),
+        K("1") , K("2")  , K("3") , K("4") , K("5") ,
+       K("tab"),  TRANS  ,  TRANS ,  TRANS ,  TRANS ,
+        M("sl"),  TRANS  ,  TRANS ,  TRANS ,  TRANS ,
+                  M("gl"),  TRANS ,          
+                                                        HL("2"), TRANS,
+                                                        HL("1"), TRANS,
+                                                TRANS,TRANS,
+
+
+                      K("6"),  K("7"),    K("8"),     K("9"), K("0"),
+                   K("left"), K("down"), K("up"), K("right"), K(";"),
+                    TRANS,  TRANS,  TRANS,  TRANS,  M("sr"),
+                                    K("="),  K("-"),
+            HL("2"), TRANS,
+            HL("1"), TRANS,
+                      TRANS, TRANS
+),
+DACTYL_MANU_MATRIX_LAYER(K("0"),
+        K("F1") , K("F2")  , K("F3") , K("F4") , K("F5") ,
+         TRANS ,  TRANS  ,  TRANS ,  TRANS ,  TRANS ,
+         TRANS ,  TRANS  ,  TRANS ,  TRANS ,  TRANS ,
+                  TRANS  ,  TRANS ,          
+                                                        HL("2"), TRANS,
+                                                        HL("1"), TRANS,
+                                                TRANS,TRANS,
+
+
+                   K("F6"), K("F7"), K("F8"), K("F9"), K("F10"),
+                  K("F11"), K("F12"),  TRANS,  TRANS,  TRANS,
+                    TRANS,  TRANS,  TRANS,  TRANS,  TRANS,
+                                    TRANS,  TRANS,
+            HL("2"), TRANS,
+            HL("1"), TRANS,
+                      TRANS, TRANS
+),
+DACTYL_MANU_MATRIX_LAYER(K("0"),
+        K("1") , K("2")  , K("3") , K("4") , K("5") ,
+         TRANS ,  TRANS  ,  TRANS ,  TRANS ,  TRANS ,
+         TRANS ,  TRANS  ,  TRANS ,  TRANS ,  TRANS ,
+                  TRANS  ,  TRANS ,          
+                                                        HL("2"), TRANS,
+                                                        HL("1"), TRANS,
+                                                TRANS,TRANS,
+
+
+                   K("6"), K("7"), K("8"), K("9"), K("0"),
+                    TRANS,  TRANS,  TRANS,  TRANS,  TRANS,
+                    TRANS,  TRANS,  TRANS,  TRANS,  TRANS,
+                                    TRANS,  TRANS,
+            HL("2"), TRANS,
+            HL("1"), TRANS,
+                      TRANS, TRANS
 ),
 //Function/symbol layer
-DACTYL_MATRIX_LAYER(K("0"),
+/* DACTYL_MATRIX_LAYER(K("0"),
         K("F11"), K("F1"), K("F2"), K("F3"), K("F4"), K("F5"),
         TRANS, RM(""), TRANS, K("end"), TRANS, PM(""),
         TRANS, K("home"), TRANS, TRANS, TRANS, TRANS,
@@ -112,5 +164,5 @@ DACTYL_MATRIX_LAYER(K("0"),
         TRANS, TRANS,
         TRANS,
         TRANS, TRANS, TRANS
-)
+) */
 };
