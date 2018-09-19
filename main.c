@@ -10,7 +10,7 @@
 #include "macro.h"
 #include "hardware/teensy.h"
 
-#include "layout.h"
+#include "layoutDM.h"
 
 uint8_t matrix[ROWS][COLS] = {{0}};
 
@@ -293,14 +293,15 @@ void press_shift_key(void* key, bool isPressed) {
         }
         else {
             g_was_key_pressed = true;
-            hardware_momentary_press(KEY_CAPS_LOCK, 0);
+            hardware_momentary_press(determine_key((char*)key), KEY_LEFT_SHIFT);
+            /*hardware_momentary_press(KEY_CAPS_LOCK, 0);*/
         }
         press_mod("sl", isPressed);
         
     } else {
-        press_mod("sl", isPressed);
+        press_mod("sl", false);
         if (!g_was_key_pressed) {
-            hardware_momentary_press(determine_key((char*)key), KEY_LEFT_SHIFT);
+            hardware_momentary_press(determine_key((char*)key), 0);
         }
         isShiftPressed = false;
     }

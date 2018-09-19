@@ -131,4 +131,36 @@ void press_macro_play(void*, bool);
  { k40,k41,k42,k43,k44,k45, na,  na,k48,k49,k4A,k4B,k4C,k4D },	\
  { k50,k51,k52,k53,k54,k55, na,  na,k58,k59,k5A,k5B,k5C,k5D }}
 
+
+//Edited for Dactyl-manuform
+#define DACTYL_MANU_MATRIX_LAYER(	    			            	    \
+        /* for unused positions */	    		                \
+        na,						                                \
+                                                                \
+        /* left hand, spatial positions */		                \
+            k41,k42,k43,k44,k45,    			                \
+            k31,k32,k33,k34,k35,    	    	                \
+            k21,k22,k23,k24,k25,    			                \
+                k12,k13,    			    	                \
+                                k05,k00,		                \
+                                k04,k01,		                \
+                            k03,k02,    		                \
+                                                                \
+        /* right hand, spatial positions */		                \
+                k48,k49,k4A,k4B,k4C,    		                \
+                k38,k39,k3A,k3B,k3C,    		                \
+                k28,k29,k2A,k2B,k2C,    		                \
+                        k1A,k1B,        		                \
+        k0D,k08,					                            \
+        k0C,k09,        					                        \
+                k0B,k0A )					                        \
+                                                                \
+/* matrix positions */						                    \
+{{ k00,k01,k02,k03,k04,k05, na,  na,k08,k09,k0A,k0B,k0C,k0D },	\
+ {  na, na,k12,k13, na, na, na,  na, na, na,k1A,k1B, na, na },	\
+ {  na,k21,k22,k23,k24,k25, na,  na,k28,k29,k2A,k2B,k2C, na },	\
+ {  na,k31,k32,k33,k34,k35, na,  na,k38,k39,k3A,k3B,k3C, na },	\
+ {  na,k41,k42,k43,k44,k45, na,  na,k48,k49,k4A,k4B,k4C, na },	\
+ {  na, na, na, na, na, na, na,  na, na, na, na, na, na, na }}
+
 #endif /* end of include guard: MAIN_H */

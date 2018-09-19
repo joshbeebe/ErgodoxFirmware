@@ -587,20 +587,20 @@ clean: begin clean_list end
 clean_list :
 	@echo
 	@echo $(MSG_CLEANING)
-	$(COPY)   $(TARGET).hex $(TARGET).hex.bak
-	$(REMOVE) $(TARGET).hex
-	$(REMOVE) $(TARGET).eep
-	$(REMOVE) $(TARGET).cof
-	$(REMOVE) $(TARGET).elf
-	$(REMOVE) $(TARGET).map
-	$(REMOVE) $(TARGET).sym
-	$(REMOVE) $(TARGET).lss
-	$(REMOVE) $(SRC:%.c=$(OBJDIR)/%.o)
-	$(REMOVE) $(SRC:%.c=$(OBJDIR)/%.lst)
-	$(REMOVE) $(SRC:.c=.s)
-	$(REMOVE) $(SRC:.c=.d)
-	$(REMOVE) $(SRC:.c=.i)
-	$(REMOVEDIR) .dep
+	- $(COPY)   $(TARGET).hex $(TARGET).hex.bak
+	- $(REMOVE) $(TARGET).hex
+	- $(REMOVE) $(TARGET).eep
+	- $(REMOVE) $(TARGET).cof
+	- $(REMOVE) $(TARGET).elf
+	- $(REMOVE) $(TARGET).map
+	- $(REMOVE) $(TARGET).sym
+	- $(REMOVE) $(TARGET).lss
+	- $(REMOVE) $(SRC:%.c=$(OBJDIR)/%.o)
+	- $(REMOVE) $(SRC:%.c=$(OBJDIR)/%.lst)
+	- $(REMOVE) $(SRC:.c=.s)
+	- $(REMOVE) $(SRC:.c=.d)
+	- $(REMOVE) $(SRC:.c=.i)
+	- $(REMOVEDIR) .dep
 	$(CREATEDIR) .dep
 
 
