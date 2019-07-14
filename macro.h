@@ -2,7 +2,7 @@
 #define MACRO_H
 #include <stdbool.h>
 #include "main.h"
-#define MAX_MACRO_LEN 14
+#define MAX_MACRO_LEN 52
 
 void macro_append(KeyCode, bool, bool);
 void macro_play(void);

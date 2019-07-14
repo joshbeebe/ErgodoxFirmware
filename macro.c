@@ -23,8 +23,14 @@ void macro_play(void) {
         usb_keyboard_send();
         hardware_delay_ms(5);
     }
+    hardware_release_all_keys();
 }
 
+/* 
+    key: keycode of the key
+    isPressed: whether the key is pressed or released
+    isModifier: if the key is a modifier
+*/
 void macro_append(KeyCode key, bool isPressed, bool isModifier) {
     if (macroLen < MAX_MACRO_LEN) {
         /*macroArray[macroLen++] = {.key=key, .isPressed=isPressed, .isModifier=isModifier};*/

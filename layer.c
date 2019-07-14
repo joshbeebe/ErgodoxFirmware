@@ -1,6 +1,7 @@
 #include "layer.h"
 #include "libs/usb/usb_keyboard.h"
 #include "libs/mcp/mcp23018.h"
+#include "hardware/teensy.h"
 #include <string.h>
 
 static bool isSecLayerSet = false;
@@ -117,7 +118,6 @@ uint16_t toggledPressedKeys[6] = {0};
  *       allow 1 layer to be toggled at a time, though.
  * TODO: only release keys which were pressed while a layer was being toggled
  */
-void release_all_keys(void);
 void hold_layer(void* lay, bool isPressed) {
     if (isPressed) {
         //need to pass false because layer only pushes on release
@@ -126,7 +126,7 @@ void hold_layer(void* lay, bool isPressed) {
     } else {
         //release_toggled_keys();
         //num_toggledLayers--;
-        release_all_keys();
+        hardware_release_all_keys();
         pop_layer(lay, false);
     }
 
@@ -134,9 +134,3 @@ void hold_layer(void* lay, bool isPressed) {
 /*
  * Release all currently pressed keys from a toggled layer
  */
-void release_all_keys(void) {
-    for (int i = 0; i < 6; i++) {
-        keyboard_keys[i] = 0;
-    }
-    keyboard_modifier_keys = 0;
-}

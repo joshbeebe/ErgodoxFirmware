@@ -29,7 +29,6 @@ void teensy_init(void) {
 
     usb_init();
     while (!usb_configured());
-    _delay_ms(500);
 }
 
 void hardware_init(void) {
@@ -92,6 +91,13 @@ void hardware_press(KeyCode key, bool isPressed) {
         }
     }
 }
+void hardware_release_all_keys() {
+    for (int i = 0; i < 6; i++) {
+        keyboard_keys[i] = 0;
+    }
+    keyboard_modifier_keys = 0;
+}
+
 void hardware_momentary_press(KeyCode key, int mods) {
     usb_keyboard_press(key, mods);
 }
