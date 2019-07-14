@@ -4,19 +4,10 @@
 #include <stdbool.h>
 #include "defines.h"
 #include "layer.h"
+#include "types.h"
 
 
 
-//Each key is represented in the matrix as a function to execute 
-//when the key is pressed and data for that function.
-//The data will need to be cast in the function to the correct type
-struct KeyPress {
-    void* const data; 
-    void (*const func)(void*, bool);
-};
-
-typedef uint16_t KeyCode;
-typedef struct KeyPress KeyPress;
 //Variables global to whole project
 //To keep track of the layers
 extern int g_stackLength;
@@ -66,134 +57,134 @@ void press_macro_play(void*, bool);
 
 //From official firmware
 //src/keyboard/ergodox/matrix.h
-#define KB_MATRIX_LAYER(	    			            	    \
-        /* for unused positions */	    		                \
-        na,						                                \
+#define KB_MATRIX_LAYER(                                        \
+        /* for unused positions */                                \
+        na,                                                        \
                                                                 \
-        /* left hand, spatial positions */		                \
-        k50,k51,k52,k53,k54,k55,k56,			                \
-        k40,k41,k42,k43,k44,k45,k46,			                \
-        k30,k31,k32,k33,k34,k35,		    	                \
-        k20,k21,k22,k23,k24,k25,k26,			                \
-        k10,k11,k12,k13,k14,			    	                \
-                                k05,k00,		                \
-                            k15,k16,k04,		                \
-                    k03,k02,k01,		                        \
+        /* left hand, spatial positions */                        \
+        k50,k51,k52,k53,k54,k55,k56,                            \
+        k40,k41,k42,k43,k44,k45,k46,                            \
+        k30,k31,k32,k33,k34,k35,                                \
+        k20,k21,k22,k23,k24,k25,k26,                            \
+        k10,k11,k12,k13,k14,                                    \
+                                k05,k00,                        \
+                            k15,k16,k04,                        \
+                    k03,k02,k01,                                \
                                                                 \
-        /* right hand, spatial positions */		                \
-            k57,k58,k59,k5A,k5B,k5C,k5D,		                \
-            k47,k48,k49,k4A,k4B,k4C,k4D,		                \
-                k38,k39,k3A,k3B,k3C,k3D,		                \
-            k27,k28,k29,k2A,k2B,k2C,k2D,		                \
-                    k19,k1A,k1B,k1C,k1D,		                \
-        k0D,k08,					                            \
-        k09,k17,k18,					                        \
-        k0C,k0B,k0A )					                        \
+        /* right hand, spatial positions */                        \
+            k57,k58,k59,k5A,k5B,k5C,k5D,                        \
+            k47,k48,k49,k4A,k4B,k4C,k4D,                        \
+                k38,k39,k3A,k3B,k3C,k3D,                        \
+            k27,k28,k29,k2A,k2B,k2C,k2D,                        \
+                    k19,k1A,k1B,k1C,k1D,                        \
+        k0D,k08,                                                \
+        k09,k17,k18,                                            \
+        k0C,k0B,k0A )                                            \
                                                                 \
-/* matrix positions */						                    \
-{{ k00,k01,k02,k03,k04,k05, na,  na,k08,k09,k0A,k0B,k0C,k0D },	\
- { k10,k11,k12,k13,k14,k15,k16, k17,k18,k19,k1A,k1B,k1C,k1D },	\
- { k20,k21,k22,k23,k24,k25,k26, k27,k28,k29,k2A,k2B,k2C,k2D },	\
- { k30,k31,k32,k33,k34,k35, na,  na,k38,k39,k3A,k3B,k3C,k3D },	\
- { k40,k41,k42,k43,k44,k45,k46, k47,k48,k49,k4A,k4B,k4C,k4D },	\
+/* matrix positions */                                            \
+{{ k00,k01,k02,k03,k04,k05, na,  na,k08,k09,k0A,k0B,k0C,k0D },    \
+ { k10,k11,k12,k13,k14,k15,k16, k17,k18,k19,k1A,k1B,k1C,k1D },    \
+ { k20,k21,k22,k23,k24,k25,k26, k27,k28,k29,k2A,k2B,k2C,k2D },    \
+ { k30,k31,k32,k33,k34,k35, na,  na,k38,k39,k3A,k3B,k3C,k3D },    \
+ { k40,k41,k42,k43,k44,k45,k46, k47,k48,k49,k4A,k4B,k4C,k4D },    \
  { k50,k51,k52,k53,k54,k55,k56, k57,k58,k59,k5A,k5B,k5C,k5D }}
 
 //Edited for Dactyl
-#define DACTYL_MATRIX_LAYER(	    			            	    \
-        /* for unused positions */	    		                \
-        na,						                                \
+#define DACTYL_MATRIX_LAYER(                                        \
+        /* for unused positions */                                \
+        na,                                                        \
                                                                 \
-        /* left hand, spatial positions */		                \
-        k50,k51,k52,k53,k54,k55,    			                \
-        k40,k41,k42,k43,k44,k45,    			                \
-        k30,k31,k32,k33,k34,k35,    	    	                \
-        k20,k21,k22,k23,k24,k25,    			                \
-        k10,k11,k12,k13,k14,			    	                \
-                                k05,k00,		                \
-                                    k04,		                \
-                            k03,k02,k01,		                \
+        /* left hand, spatial positions */                        \
+        k50,k51,k52,k53,k54,k55,                                \
+        k40,k41,k42,k43,k44,k45,                                \
+        k30,k31,k32,k33,k34,k35,                                \
+        k20,k21,k22,k23,k24,k25,                                \
+        k10,k11,k12,k13,k14,                                    \
+                                k05,k00,                        \
+                                    k04,                        \
+                            k03,k02,k01,                        \
                                                                 \
-        /* right hand, spatial positions */		                \
-                k58,k59,k5A,k5B,k5C,k5D,		                \
-                k48,k49,k4A,k4B,k4C,k4D,		                \
-                k38,k39,k3A,k3B,k3C,k3D,		                \
-                k28,k29,k2A,k2B,k2C,k2D,		                \
-                    k19,k1A,k1B,k1C,k1D,		                \
-        k0D,k08,					                            \
-        k09,        					                        \
-        k0C,k0B,k0A )					                        \
+        /* right hand, spatial positions */                        \
+                k58,k59,k5A,k5B,k5C,k5D,                        \
+                k48,k49,k4A,k4B,k4C,k4D,                        \
+                k38,k39,k3A,k3B,k3C,k3D,                        \
+                k28,k29,k2A,k2B,k2C,k2D,                        \
+                    k19,k1A,k1B,k1C,k1D,                        \
+        k0D,k08,                                                \
+        k09,                                                    \
+        k0C,k0B,k0A )                                            \
                                                                 \
-/* matrix positions */						                    \
-{{ k00,k01,k02,k03,k04,k05, na,  na,k08,k09,k0A,k0B,k0C,k0D },	\
- { k10,k11,k12,k13,k14, na, na,  na, na,k19,k1A,k1B,k1C,k1D },	\
- { k20,k21,k22,k23,k24,k25, na,  na,k28,k29,k2A,k2B,k2C,k2D },	\
- { k30,k31,k32,k33,k34,k35, na,  na,k38,k39,k3A,k3B,k3C,k3D },	\
- { k40,k41,k42,k43,k44,k45, na,  na,k48,k49,k4A,k4B,k4C,k4D },	\
+/* matrix positions */                                            \
+{{ k00,k01,k02,k03,k04,k05, na,  na,k08,k09,k0A,k0B,k0C,k0D },    \
+ { k10,k11,k12,k13,k14, na, na,  na, na,k19,k1A,k1B,k1C,k1D },    \
+ { k20,k21,k22,k23,k24,k25, na,  na,k28,k29,k2A,k2B,k2C,k2D },    \
+ { k30,k31,k32,k33,k34,k35, na,  na,k38,k39,k3A,k3B,k3C,k3D },    \
+ { k40,k41,k42,k43,k44,k45, na,  na,k48,k49,k4A,k4B,k4C,k4D },    \
  { k50,k51,k52,k53,k54,k55, na,  na,k58,k59,k5A,k5B,k5C,k5D }}
 
 
 //Edited for Dactyl-manuform
-#define DACTYL_MANU_MATRIX_LAYER(	    			            	    \
-        /* for unused positions */	    		                \
-        na,						                                \
+#define DACTYL_MANU_MATRIX_LAYER(                                        \
+        /* for unused positions */                                \
+        na,                                                        \
                                                                 \
-        /* left hand, spatial positions */		                \
-            k41,k42,k43,k44,k45,    			                \
-            k31,k32,k33,k34,k35,    	    	                \
-            k21,k22,k23,k24,k25,    			                \
-                k12,k13,    			    	                \
-                                k05,k00,		                \
-                                k04,k01,		                \
-                            k03,k02,    		                \
+        /* left hand, spatial positions */                        \
+            k41,k42,k43,k44,k45,                                \
+            k31,k32,k33,k34,k35,                                \
+            k21,k22,k23,k24,k25,                                \
+                k12,k13,                                        \
+                                k05,k00,                        \
+                                k04,k01,                        \
+                            k03,k02,                            \
                                                                 \
-        /* right hand, spatial positions */		                \
-                k48,k49,k4A,k4B,k4C,    		                \
-                k38,k39,k3A,k3B,k3C,    		                \
-                k28,k29,k2A,k2B,k2C,    		                \
-                        k1A,k1B,        		                \
-        k0D,k08,					                            \
-        k0C,k09,        					                        \
-                k0B,k0A )					                        \
+        /* right hand, spatial positions */                        \
+                k48,k49,k4A,k4B,k4C,                            \
+                k38,k39,k3A,k3B,k3C,                            \
+                k28,k29,k2A,k2B,k2C,                            \
+                        k1A,k1B,                                \
+        k0D,k08,                                                \
+        k0C,k09,                                                    \
+                k0B,k0A )                                            \
                                                                 \
-/* matrix positions */						                    \
-{{ k00,k01,k02,k03,k04,k05, na,  na,k08,k09,k0A,k0B,k0C,k0D },	\
- {  na, na,k12,k13, na, na, na,  na, na, na,k1A,k1B, na, na },	\
- {  na,k21,k22,k23,k24,k25, na,  na,k28,k29,k2A,k2B,k2C, na },	\
- {  na,k31,k32,k33,k34,k35, na,  na,k38,k39,k3A,k3B,k3C, na },	\
- {  na,k41,k42,k43,k44,k45, na,  na,k48,k49,k4A,k4B,k4C, na },	\
+/* matrix positions */                                            \
+{{ k00,k01,k02,k03,k04,k05, na,  na,k08,k09,k0A,k0B,k0C,k0D },    \
+ {  na, na,k12,k13, na, na, na,  na, na, na,k1A,k1B, na, na },    \
+ {  na,k21,k22,k23,k24,k25, na,  na,k28,k29,k2A,k2B,k2C, na },    \
+ {  na,k31,k32,k33,k34,k35, na,  na,k38,k39,k3A,k3B,k3C, na },    \
+ {  na,k41,k42,k43,k44,k45, na,  na,k48,k49,k4A,k4B,k4C, na },    \
  {  na, na, na, na, na, na, na,  na, na, na, na, na, na, na }}
 
 //Edited for Dactyl
-#define DACTYL_BIG_MANU_LAYER(	    			            	    \
-        /* for unused positions */	    		                \
-        na,						                                \
+#define DACTYL_BIG_MANU_LAYER(                                        \
+        /* for unused positions */                                \
+        na,                                                        \
                                                                 \
-        /* left hand, spatial positions */		                \
-        k50,k51,k52,k53,k54,k55,    			                \
-        k40,k41,k42,k43,k44,k45,    			                \
-        k30,k31,k32,k33,k34,k35,    	    	                \
-        k20,k21,k22,k23,k24,k25,    			                \
-                k12,k13,    			    	                \
-                        k03,k04,	     	                \
-                                 k05,k01,		                \
-                                 k02,k00,		                \
+        /* left hand, spatial positions */                        \
+        k50,k51,k52,k53,k54,k55,                                \
+        k40,k41,k42,k43,k44,k45,                                \
+        k30,k31,k32,k33,k34,k35,                                \
+        k20,k21,k22,k23,k24,k25,                                \
+                k12,k13,                                        \
+                            k03,k04,                             \
+                                 k05,k01,                        \
+                                 k02,k00,                        \
                                                                 \
-        /* right hand, spatial positions */		                \
-                k58,k59,k5A,k5B,k5C,k5D,		                \
-                k48,k49,k4A,k4B,k4C,k4D,		                \
-                k38,k39,k3A,k3B,k3C,k3D,		                \
-                k28,k29,k2A,k2B,k2C,k2D,		                \
-                        k1A,k1B,        		                \
-                k09,k0A,			                            \
-        k0C,k08,        				                        \
-        k0D,k0B )			    		                        \
+        /* right hand, spatial positions */                        \
+                k58,k59,k5A,k5B,k5C,k5D,                        \
+                k48,k49,k4A,k4B,k4C,k4D,                        \
+                k38,k39,k3A,k3B,k3C,k3D,                        \
+                k28,k29,k2A,k2B,k2C,k2D,                        \
+                        k1A,k1B,                                \
+            k09,k0A,                                        \
+        k0C,k08,                                                \
+        k0D,k0B )                                                \
                                                                 \
-/* matrix positions */						                    \
-{{ k00,k01,k02,k03,k04,k05, na,  na,k08,k09,k0A,k0B,k0C,k0D },	\
- {  na, na,k12,k13, na, na, na,  na, na, na,k1A,k1B, na, na },	\
- { k20,k21,k22,k23,k24,k25, na,  na,k28,k29,k2A,k2B,k2C,k2D },	\
- { k30,k31,k32,k33,k34,k35, na,  na,k38,k39,k3A,k3B,k3C,k3D },	\
- { k40,k41,k42,k43,k44,k45, na,  na,k48,k49,k4A,k4B,k4C,k4D },	\
+/* matrix positions */                                            \
+{{ k00,k01,k02,k03,k04,k05, na,  na,k08,k09,k0A,k0B,k0C,k0D },    \
+ {  na, na,k12,k13, na, na, na,  na, na, na,k1A,k1B, na, na },    \
+ { k20,k21,k22,k23,k24,k25, na,  na,k28,k29,k2A,k2B,k2C,k2D },    \
+ { k30,k31,k32,k33,k34,k35, na,  na,k38,k39,k3A,k3B,k3C,k3D },    \
+ { k40,k41,k42,k43,k44,k45, na,  na,k48,k49,k4A,k4B,k4C,k4D },    \
  { k50,k51,k52,k53,k54,k55, na,  na,k58,k59,k5A,k5B,k5C,k5D }}
 
 #endif /* end of include guard: MAIN_H */

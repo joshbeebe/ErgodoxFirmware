@@ -1,0 +1,15 @@
+const struct PROGMEM KeyPress g_keys[][ROWS][COLS] = {DACTYL_MATRIX_LAYER(K("0"),
+        K("q"), K("w"), K("e"), K("r"), K("t"),
+        K("a"), K("s"), K("d"), K("f"), K("g"),
+        H("z"), K("x"), K("c"), K("v"), K("b"),
+                K(" "), K(" "), K(" "), K(" "),
+                                                K(" "), K(" "),
+                                                K(" "), K(" "),
+
+
+            K("y"),     K("u"),   K("i"), K("o"), K("p"),
+            K("h"),     K("j"),   K("k"), K("l"), K(";"),
+            K("n"),     K("m"),   K(","), K("."), H("/"),
+            K("enter"), K("spc"), K("-"), K("'"),
+        K(" "), K(" "),
+        K(" "), K(" "),

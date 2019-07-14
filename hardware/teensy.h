@@ -1,9 +1,12 @@
 #ifndef TEENSY_H
 #define TEENSY_H
 
+#ifndef __AVR_ATmega32U4__
+    #define __AVR_ATmega32U4__
+#endif
 #include <avr/pgmspace.h>
 #include <stdbool.h>
-#include "main.h"
+#include "../types.h"
 
 void hardware_reflash_firmware(void);
 void hardware_press(KeyCode, bool);

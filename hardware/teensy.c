@@ -2,7 +2,6 @@
 #include "../libs/twi/twi.h"
 #include "../libs/mcp/mcp23018.h"
 #include "../libs/usb/usb_keyboard.h"
-#include "../main.h"
 #include <avr/pgmspace.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>

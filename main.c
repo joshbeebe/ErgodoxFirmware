@@ -302,7 +302,7 @@ void press_shift_key(void* key, bool isPressed) {
     } else {
         press_mod("sl", false);
         if (!g_was_key_pressed) {
-            hardware_momentary_press(determine_key((char*)key), 0);
+            hardware_momentary_press(determine_key((char*)key), KEY_LEFT_SHIFT);
         }
         isShiftPressed = false;
     }

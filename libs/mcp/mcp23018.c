@@ -45,46 +45,46 @@
  *   things are currently set up.  this may change in the future.
  */
 uint8_t mcp23018_init(void) {
-	uint8_t ret;
+    uint8_t ret;
 
-	// set pin direction
-	// - unused  : input  : 1
-	// - input   : input  : 1
-	// - driving : output : 0
-	twi_start();
-	ret = twi_send(TWI_ADDR_WRITE);
-	if (ret) goto out;  // make sure we got an ACK
-	twi_send(IODIRA);
+    // set pin direction
+    // - unused  : input  : 1
+    // - input   : input  : 1
+    // - driving : output : 0
+    twi_start();
+    ret = twi_send(TWI_ADDR_WRITE);
+    if (ret) goto out;  // make sure we got an ACK
+    twi_send(IODIRA);
     twi_send(0b10000000);  // IODIRA
     twi_send(0b11111111);  // IODIRB
-	twi_stop();
+    twi_stop();
 
-	// set pull-up
-	// - unused  : on  : 1
-	// - input   : on  : 1
-	// - driving : off : 0
-	twi_start();
-	ret = twi_send(TWI_ADDR_WRITE);
-	if (ret) goto out;  // make sure we got an ACK
-	twi_send(GPPUA);
+    // set pull-up
+    // - unused  : on  : 1
+    // - input   : on  : 1
+    // - driving : off : 0
+    twi_start();
+    ret = twi_send(TWI_ADDR_WRITE);
+    if (ret) goto out;  // make sure we got an ACK
+    twi_send(GPPUA);
     twi_send(0b10000000);  // GPPUA
     twi_send(0b11111111);  // GPPUB
-	twi_stop();
+    twi_stop();
 
-	// set logical value (doesn't matter on inputs)
-	// - unused  : hi-Z : 1
-	// - input   : hi-Z : 1
-	// - driving : hi-Z : 1
-	twi_start();
-	ret = twi_send(TWI_ADDR_WRITE);
-	if (ret) goto out;  // make sure we got an ACK
-	twi_send(OLATA);
-	twi_send(0b11111111);  //OLATA
-	twi_send(0b11111111);  //OLATB
+    // set logical value (doesn't matter on inputs)
+    // - unused  : hi-Z : 1
+    // - input   : hi-Z : 1
+    // - driving : hi-Z : 1
+    twi_start();
+    ret = twi_send(TWI_ADDR_WRITE);
+    if (ret) goto out;  // make sure we got an ACK
+    twi_send(OLATA);
+    twi_send(0b11111111);  //OLATA
+    twi_send(0b11111111);  //OLATB
 
 out:
-	twi_stop();
-	return ret;
+    twi_stop();
+    return ret;
 }
 
 /* returns:
@@ -92,23 +92,23 @@ out:
  * - failure: twi status code
  */
 uint8_t mcp23018_update_matrix(void) {
-	uint8_t ret, data;
+    uint8_t ret, data;
 
-	// initialize things, just to make sure
-	// - it's not appreciably faster to skip this, and it takes care of the
-	//   case when the i/o expander isn't plugged in during the first
-	//   init()
-	ret = mcp23018_init();
+    // initialize things, just to make sure
+    // - it's not appreciably faster to skip this, and it takes care of the
+    //   case when the i/o expander isn't plugged in during the first
+    //   init()
+    ret = mcp23018_init();
 
-	// if there was an error
-	if (ret) {
-		// clear our part of the matrix
-		for (uint8_t row=0; row<=5; row++)
-			for (uint8_t col=0; col<=6; col++)
-				g_keys_pressed[row][col] = 0;
+    // if there was an error
+    if (ret) {
+        // clear our part of the matrix
+        for (uint8_t row=0; row<=5; row++)
+            for (uint8_t col=0; col<=6; col++)
+                g_keys_pressed[row][col] = 0;
 
-		return ret;
-	}
+        return ret;
+    }
     for (uint8_t col=0; col<=6; col++) {
         // set active column low  : 0
         // set other columns hi-Z : 1
@@ -140,9 +140,9 @@ uint8_t mcp23018_update_matrix(void) {
     twi_send(0xFF);
     twi_stop();
 
-	// /update our part of the matrix
-	// --------------------------------------------------------------------
+    // /update our part of the matrix
+    // --------------------------------------------------------------------
 
-	return ret;  // success
+    return ret;  // success
 }
 
