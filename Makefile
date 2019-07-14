@@ -549,7 +549,7 @@ extcoff: $(TARGET).elf
 $(OBJDIR)/%.o : %.c
 	@echo
 	@echo $(MSG_COMPILING) $<
-	#make sure our obj directories exist
+# make sure our obj directories exist
 	$(CREATEDIR) $(@D)
 	$(CC) -c $(ALL_CFLAGS) $< -o $@ 
 
