@@ -12,25 +12,14 @@
 
 #include "layoutBigDM.h"
 
-uint8_t matrix[ROWS][COLS] = {{0}};
-
-bool g_keys_pressed[ROWS][COLS] = {{0}};
-bool g_old_keys_pressed[ROWS][COLS] = {{0}};
-
 int g_stackLength = 0;
 int g_layerStack[MAXLAYERS] = {0};
 
-bool isRecording = false;
+static bool isRecording = false;
 
 
 //used for determining whether key was pressed when a mod key/ tap key is released
-bool g_was_key_pressed = false;
-//used to keep track of key when a key is transparent
-/*struct {*/
-    /*int row;*/
-    /*int col;*/
-    /*int stack_pos;*/
-/*} transparant_position;*/
+static bool was_key_pressed = false;
 int g_trans_pos[] = {0, 0, 0};
 
 
@@ -92,7 +81,7 @@ int main(void) {
  * isPressed: Whether the key was changed to pressed or changed to release
  */
 void press_key(void* data, bool isPressed) {
-    g_was_key_pressed = true;
+    was_key_pressed = true;
     KeyCode key = determine_key((char*)data);
     if (isRecording) {
         macro_append(key, isPressed, false);
@@ -114,7 +103,7 @@ void press_num_lock(void* data, bool isPressed) {
 void press_mod(void* data, bool isPressed) {
     char* key = (char*)data;
     static bool leftShiftPressed = false;
-    int mod = 0;
+    Modifier mod = 0;
     //determine the modifier
     if (key[0] == 'c') {
         //control
@@ -269,11 +258,11 @@ void press_macro(void* data, bool isPressed) {
  */
 void press_ctrl_key(void* key, bool isPressed) {
     if (isPressed) {
-        g_was_key_pressed = false;
+        was_key_pressed = false;
         press_mod("cl", isPressed);
     } else {
         press_mod("cl", isPressed);
-        if (!g_was_key_pressed) {
+        if (!was_key_pressed) {
             hardware_momentary_press(KEY_ESC, 0);
         }
     }
@@ -288,12 +277,12 @@ void press_ctrl_key(void* key, bool isPressed) {
 void press_shift_key(void* key, bool isPressed) {
     static bool isShiftPressed = false;
     if (isPressed) {
-        g_was_key_pressed = false;
+        was_key_pressed = false;
         if (!isShiftPressed) {
             isShiftPressed = true;
         }
         else {
-            g_was_key_pressed = true;
+            was_key_pressed = true;
             /*hardware_momentary_press(determine_key((char*)key), KEY_LEFT_SHIFT);*/
             hardware_momentary_press(KEY_CAPS_LOCK, 0);
         }
@@ -301,7 +290,7 @@ void press_shift_key(void* key, bool isPressed) {
         
     } else {
         press_mod("sl", false);
-        if (!g_was_key_pressed) {
+        if (!was_key_pressed) {
             hardware_momentary_press(determine_key((char*)key), KEY_LEFT_SHIFT);
         }
         isShiftPressed = false;

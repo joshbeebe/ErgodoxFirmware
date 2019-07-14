@@ -1,6 +1,9 @@
 #ifndef UPDATE_KEYS_H
 #define UPDATE_KEYS_H
 
+#include <stdbool.h>
+#include "main.h"
+
 //These are defined by physical pins on the Teensy
 #define ROW5 0
 #define ROW4 1
@@ -13,7 +16,7 @@
 void update_cols(void);
 void update_col(int colNum);
 void update_left_hand(void);
-void send_keys(void);
+void send_keys(bool[ROWS][COLS]);
 //void press_key(char key, bool isPressed);
 void update_right_hand(void);
 

@@ -17,14 +17,7 @@ extern int g_layerStack[MAXLAYERS];
 //position of transparent key press
 extern int g_trans_pos[3];
 
-//matrix of current keys pressed
-extern bool g_keys_pressed[ROWS][COLS];
-//matrix of previous keys pressed
-extern bool g_old_keys_pressed[ROWS][COLS];
-
 extern const struct KeyPress g_keys[][ROWS][COLS];
-
-extern bool g_was_key_pressed;
 
 //For normal keys
 #define K(x) {x, press_key}

@@ -12,11 +12,14 @@
 //Give time for pixies to stop moving
 #define debounce() _delay_us(1)
 
+
+static bool keys_pressed[ROWS][COLS] = {{0}};
 void update_cols(void) {
+    bool old_keys_pressed[ROWS][COLS] = {{0}};
     //Move press array to old press array
     for (int row = 0; row < ROWS; row++) {
         for (int col = 0; col < COLS; col++) {
-            g_old_keys_pressed[row][col] = g_keys_pressed[row][col];
+            old_keys_pressed[row][col] = keys_pressed[row][col];
         }
     }
 
@@ -24,7 +27,7 @@ void update_cols(void) {
     update_right_hand();
     update_left_hand();
     //interpret results
-    send_keys();
+    send_keys(old_keys_pressed);
 }
 
 #define _UP_COL(port, pin, col)  \
@@ -98,13 +101,13 @@ void update_right_hand(void) {
 
 void update_left_hand(void) {
     int ret;
-    ret = mcp23018_update_matrix();
+    ret = mcp23018_update_matrix(keys_pressed);
     }
 
 //Check if pin is powered
 #define IS_ROW_PRESSED(x) (!(PINF & 1 << x))
 
-#define DETECT_PRESSED(x) g_keys_pressed[x][colNum] = IS_ROW_PRESSED(ROW##x);
+#define DETECT_PRESSED(x) keys_pressed[x][colNum] = IS_ROW_PRESSED(ROW##x);
 /*
  * Update each key of a particular column
  * colNum: Column that is to be updated
@@ -124,7 +127,7 @@ void update_col(int colNum) {
 /*
  * Find which keys are pressed and send them
  */
-void send_keys(void) {
+void send_keys(bool old_keys_pressed[ROWS][COLS]) {
     //int num_keys_pressed = 0;
     bool key_pressed;       //Whether or not the key at the current position is pressed
     bool old_key_pressed;   //Whether or not the key at the current position was pressed
@@ -132,8 +135,8 @@ void send_keys(void) {
     int currLayer = g_layerStack[g_stackLength];
     for (int row = 0; row < ROWS; row++) {
         for (int col = 0; col < COLS; col++) {
-            key_pressed = g_keys_pressed[row][col];
-            old_key_pressed = g_old_keys_pressed[row][col];
+            key_pressed = keys_pressed[row][col];
+            old_key_pressed = old_keys_pressed[row][col];
 
             //Update position in case of a transparent key
             g_trans_pos[0] = row;

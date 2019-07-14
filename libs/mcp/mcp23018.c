@@ -91,7 +91,7 @@ out:
  * - success: 0
  * - failure: twi status code
  */
-uint8_t mcp23018_update_matrix(void) {
+uint8_t mcp23018_update_matrix(bool keys_pressed[ROWS][COLS]) {
     uint8_t ret, data;
 
     // initialize things, just to make sure
@@ -105,7 +105,7 @@ uint8_t mcp23018_update_matrix(void) {
         // clear our part of the matrix
         for (uint8_t row=0; row<=5; row++)
             for (uint8_t col=0; col<=6; col++)
-                g_keys_pressed[row][col] = 0;
+                keys_pressed[row][col] = 0;
 
         return ret;
     }
@@ -129,7 +129,7 @@ uint8_t mcp23018_update_matrix(void) {
 
         // update matrix
         for (uint8_t row=0; row<=5; row++) {
-            g_keys_pressed[row][col] = !( data & (1<<(5-row)) );
+            keys_pressed[row][col] = !( data & (1<<(5-row)) );
         }
     }
 

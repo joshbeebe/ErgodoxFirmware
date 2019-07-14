@@ -49,7 +49,7 @@ void hardware_loop(void) {
     _delay_ms(5);
 }
 
-void hardware_press_modifier(KeyCode mod, bool isPressed) {
+void hardware_press_modifier(Modifier mod, bool isPressed) {
     if (isPressed) {
         keyboard_modifier_keys |= mod;
     } else {
@@ -97,7 +97,7 @@ void hardware_release_all_keys() {
     keyboard_modifier_keys = 0;
 }
 
-void hardware_momentary_press(KeyCode key, int mods) {
+void hardware_momentary_press(KeyCode key, Modifier mods) {
     usb_keyboard_press(key, mods);
 }
 void hardware_reflash_firmware(void) {

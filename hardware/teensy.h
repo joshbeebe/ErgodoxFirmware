@@ -10,11 +10,11 @@
 
 void hardware_reflash_firmware(void);
 void hardware_press(KeyCode, bool);
-void hardware_press_modifier(KeyCode, bool);
+void hardware_press_modifier(Modifier, bool);
 void hardware_loop(void);
 void hardware_init(void);
 void hardware_delay_ms(int);
-void hardware_momentary_press(KeyCode, int);
+void hardware_momentary_press(KeyCode, Modifier);
 void hardware_release_all_keys(void);
 
 //LED functions
