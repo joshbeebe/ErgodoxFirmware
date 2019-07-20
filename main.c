@@ -220,7 +220,7 @@ void press_macro(void* data, bool isPressed) {
                     time = 0;
                     i++;
                     key = macro[i];
-                    while (key >= '0' && key <= '9') {
+                    while (IS_NUMBER(key)) {
                         time *= 10;
                         time += key - '0';
                         i++;
@@ -235,9 +235,8 @@ void press_macro(void* data, bool isPressed) {
             key = macro[i];
 
             //Handle uppercase keys
-            if (key >= 'A' && key <= 'Z') {
-                key -= 'A';
-                key += 'a';
+            if (IS_UPPER(key)) {
+                key = TO_LOWER(key);
                 mods |=  KEY_LEFT_SHIFT;  
             }
 

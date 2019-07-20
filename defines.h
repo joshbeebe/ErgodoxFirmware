@@ -5,6 +5,10 @@
 #define COLS 14
 #define MAXLAYERS 10
 
+#define IS_UPPER(x) ((x) >= 'A' && (x) <= 'Z')
+#define IS_LOWER(x) ((x) >= 'a' && (x) <= 'z')
+#define IS_NUMBER(x) ((x) >= '0' && (x) <= '9')
+#define TO_LOWER(x) ((x - 'A' + 'a'))
 
 //Media keycodes
 #define MEDIA_MUTE          0x00E2

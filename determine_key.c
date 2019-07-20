@@ -20,7 +20,7 @@ KeyCode determine_key(char* key) {
             keyCode = KEY_F1 + keyCode;
         }
     } else if (key[0] == 'N') {
-        if (key[1] <= '9' && key[1] >= '1') {
+        if (IS_NUMBER(key[1])) {
             //key[1] -'1' turns ASCII to #, + KEYPAD_1 to convert to USB keycode
             keyCode = (key[1] - '1') + KEYPAD_1;
         } else if (key[1] == '0') {
@@ -107,17 +107,17 @@ KeyCode determine_single_key(char data) {
 
     //convert from ASCII value to USB keycode
     //Key needs to come in as lowercase
-    if (key >= 'a' && key <= 'z') {
+    if (IS_LOWER(key)) {
         //set 'a' as 0, then add in the usb offset
         key -= 'a';
         key += USB_KEYCODE_OFFSET;
-    } else if (key >= '1' && key <= '9') {
-        //numbers 1-9
-        key -= '1';
-        key += KEY_1;
     } else if (key == '0') {
         //0 comes after the other numbers in USB, but before them in ASCII
         key = KEY_0;
+    } else if (IS_NUMBER(key)) {
+        //numbers 1-9
+        key -= '1';
+        key += KEY_1;
     } else {
         //Key is a special character, so it needs special treatment
         switch (key) {
