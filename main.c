@@ -1,5 +1,7 @@
-/*#include <avr/pgmspace.h>*/
-/*#include <avr/interrupt.h>*/
+#ifdef __INTELLISENSE__
+    #define __AVR_ATmega32U4__
+    #include <avr/io.h>
+#endif
 #include <stdbool.h>
 #include <string.h>
 #include <stdio.h>
@@ -58,6 +60,10 @@ bool testing(void) {
 
 
     return false;
+}
+
+ms timer_elapsed(ms start_time) {
+    return (start_time - hardware_read_time());
 }
 
 int main(void) {
@@ -275,6 +281,7 @@ void press_ctrl_key(void* key, bool isPressed) {
  */
 void press_shift_key(void* key, bool isPressed) {
     static bool isShiftPressed = false;
+    static uint16_t start_time = 0u;
     if (isPressed) {
         was_key_pressed = false;
         if (!isShiftPressed) {
@@ -285,11 +292,12 @@ void press_shift_key(void* key, bool isPressed) {
             /*hardware_momentary_press(determine_key((char*)key), KEY_LEFT_SHIFT);*/
             hardware_momentary_press(KEY_CAPS_LOCK, 0);
         }
+        start_time = hardware_read_time();
         press_mod("sl", isPressed);
         
     } else {
         press_mod("sl", false);
-        if (!was_key_pressed) {
+        if ((!was_key_pressed) && (timer_elapsed(start_time) < TAP_TIME)) {
             hardware_momentary_press(determine_key((char*)key), KEY_LEFT_SHIFT);
         }
         isShiftPressed = false;

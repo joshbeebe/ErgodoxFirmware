@@ -16,6 +16,7 @@ void hardware_init(void);
 void hardware_delay_ms(int);
 void hardware_momentary_press(KeyCode, Modifier);
 void hardware_release_all_keys(void);
+ms hardware_read_time(void);
 
 //LED functions
 #define _led_on(n) DDRB |= (1<<(n+4))

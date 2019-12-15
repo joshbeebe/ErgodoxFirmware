@@ -46,7 +46,7 @@ DACTYL_BIG_MANU_LAYER(K("0"),
                  K("left"),K("down"),K("up"),   K("right"),TRANS,    K("vup"),
                  TRANS,   TRANS,     U("9"),    U("0"),    TRANS,    K("vdn"),
                                      K("play"), K("next"),
-                TRANS, TL("2"),
+                TRANS, U("-"),
         TRANS, TRANS,
         TRANS, TRANS
 ),

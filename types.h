@@ -10,3 +10,4 @@ struct KeyPress {
 typedef uint16_t KeyCode;
 typedef uint8_t Modifier;
 typedef struct KeyPress KeyPress;
+typedef uint16_t ms;

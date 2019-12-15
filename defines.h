@@ -5,6 +5,9 @@
 #define COLS 14
 #define MAXLAYERS 10
 
+//Time in ms
+#define TAP_TIME 300u
+
 #define IS_UPPER(x) ((x) >= 'A' && (x) <= 'Z')
 #define IS_LOWER(x) ((x) >= 'a' && (x) <= 'z')
 #define IS_NUMBER(x) ((x) >= '0' && (x) <= '9')

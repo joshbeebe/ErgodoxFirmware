@@ -26,8 +26,20 @@ void teensy_init(void) {
     PORTC = 0;
     PORTB = 0;
 
+    //Configure timer3
+    TCCR3A = 0u;
+    TCCR3B = 0u;
+    //Set timer3 prescaler to 1024
+    TCCR3B = ((1u << CS32) | (1u << CS30);
+
     usb_init();
     while (!usb_configured());
+}
+
+ms hardware_read_time(void) {
+    //Each tick is 0.064 ms
+    //Divide by 15.625 to get output in ms
+    return (ms)(TCNT3 / 15.625);
 }
 
 void hardware_init(void) {

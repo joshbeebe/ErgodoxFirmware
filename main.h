@@ -7,6 +7,7 @@
 #include "types.h"
 
 
+ms timer_elapsed(ms start_time) {
 
 //Variables global to whole project
 //To keep track of the layers
