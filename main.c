@@ -62,7 +62,7 @@ bool testing(void) {
     return false;
 }
 
-ms timer_elapsed(ms start_time) {
+ms time_elapsed(ms start_time) {
     return (start_time - hardware_read_time());
 }
 
@@ -297,7 +297,7 @@ void press_shift_key(void* key, bool isPressed) {
         
     } else {
         press_mod("sl", false);
-        if ((!was_key_pressed) && (timer_elapsed(start_time) < TAP_TIME)) {
+        if ((!was_key_pressed) && (time_elapsed(start_time) < TAP_TIME)) {
             hardware_momentary_press(determine_key((char*)key), KEY_LEFT_SHIFT);
         }
         isShiftPressed = false;

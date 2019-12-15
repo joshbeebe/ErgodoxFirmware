@@ -30,7 +30,7 @@ void teensy_init(void) {
     TCCR3A = 0u;
     TCCR3B = 0u;
     //Set timer3 prescaler to 1024
-    TCCR3B = ((1u << CS32) | (1u << CS30);
+    TCCR3B = ((1u << CS32) | (1u << CS30));
 
     usb_init();
     while (!usb_configured());
