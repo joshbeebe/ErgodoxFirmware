@@ -63,7 +63,7 @@ bool testing(void) {
 }
 
 ms time_elapsed(ms start_time) {
-    return (start_time - hardware_read_time());
+    return (hardware_read_time() - start_time);
 }
 
 int main(void) {
@@ -281,7 +281,7 @@ void press_ctrl_key(void* key, bool isPressed) {
  */
 void press_shift_key(void* key, bool isPressed) {
     static bool isShiftPressed = false;
-    static uint16_t start_time = 0u;
+    static ms start_time = 0u;
     if (isPressed) {
         was_key_pressed = false;
         if (!isShiftPressed) {
