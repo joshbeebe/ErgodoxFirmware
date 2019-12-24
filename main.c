@@ -72,7 +72,9 @@ int main(void) {
     __led_blink(4);
 
     /*if (testing()) return 1;*/
+    hardware_enable_watchdog();
     while (1) {
+        hareware_reset_watchdog();
         hardware_loop();
         hardware_delay_ms(5);
         update_cols();
@@ -232,7 +234,11 @@ void press_macro(void* data, bool isPressed) {
                         i++;
                         key = macro[i];
                     }
+                    //Make sure the watchdog doesn't trip while we wait
+                    hardware_disable_watchdog();
                     hardware_delay_ms(time);
+                    hardware_enable_watchdog();
+                    hareware_reset_watchdog();
                     //make sure we interpret the next command
                     i--;
                     continue;
@@ -252,6 +258,8 @@ void press_macro(void* data, bool isPressed) {
         //make sure we wait long enough for things to register key presses
         hardware_delay_ms(35);
         mods = 0;
+        //This function can take a while. Make sure the watchdog doesn't reset
+        hareware_reset_watchdog();
     }
 }
 

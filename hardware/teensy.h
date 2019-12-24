@@ -16,6 +16,9 @@ void hardware_init(void);
 void hardware_delay_ms(int);
 void hardware_momentary_press(KeyCode, Modifier);
 void hardware_release_all_keys(void);
+void hardware_enable_watchdog(void);
+void hardware_disable_watchdog(void);
+void hareware_reset_watchdog(void);
 ms hardware_read_time(void);
 
 //LED functions

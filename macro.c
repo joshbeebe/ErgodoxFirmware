@@ -23,6 +23,8 @@ void macro_play(void) {
         usb_keyboard_send();
         hardware_delay_ms(5);
     }
+    //Service the watchdog
+    hareware_reset_watchdog();
     hardware_release_all_keys();
 }
 

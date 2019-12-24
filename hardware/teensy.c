@@ -5,6 +5,7 @@
 #include <avr/pgmspace.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>
+#include <avr/wdt.h>
 #define CPU_PRESCALE(n) (CLKPR = 0x80, CLKPR = (n))
 /*
  *  Initialize teensy things
@@ -135,4 +136,14 @@ void hardware_reflash_firmware(void) {
 
 void hardware_delay_ms(int ms) {
     _delay_ms(ms);
+}
+
+void hardware_enable_watchdog(void) {
+    wdt_enable(WDTO_250MS);
+}
+void hardware_disable_watchdog(void) {
+    wdt_disable();
+}
+void hareware_reset_watchdog(void) {
+    wdt_reset();
 }
